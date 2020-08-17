@@ -45,16 +45,27 @@ select Education, FirstName,LastName, count(Client_idClient) from application
 join client on application.Client_idClient = client.idClient where Education = 'high' group by Client_idClient;
 
 # 14.  Вивести дані про клієнта, в якого середня сума кредитів найвища.
+select FirstName, LastName, idClient, avg(sum) from application
+join client on application.Client_idClient = client.idClient group by Client_idClient order by avg(sum) desc limit 1;
 
 # 15.  Вивести відділення, яке видало в кредити найбільше грошей.
+select idDepartment, DepartmentCity, sum(sum) from department
+join client on department.idDepartment = client.Department_idDepartment
+join application on client.idClient = application.Client_idClient group by idDepartment limit 1;
 
 # 16.  Вивести відділення, яке видало найбільший кредит.
+select idDepartment, DepartmentCity, max(sum) from application
+join client on client.idClient = application.Client_idClient
+join department on client.Department_idDepartment = department.idDepartment;
 
 # 17.  Усім клієнтам, які мають вищу освіту, встановити усі їхні кредити у розмірі 6000 грн.
+update application join client on application.Client_idClient = client.idClient set Sum = 6000 where Education = 'high';
 
 # 18.  Усіх клієнтів київських відділень пересилити до Києва.
+update client join department on client.Department_idDepartment = department.idDepartment set City = 'Kyiv' where DepartmentCity = 'Kyiv';
 
 # 19.  Видалити усі кредити, які є повернені.
+delete from application where CreditState = 'Returned';
 
 # 20.  Видалити кредити клієнтів, в яких друга літера прізвища є голосною.
 
@@ -65,12 +76,12 @@ join client on application.Client_idClient = client.idClient where Education = '
 # 23.  Знайти максимальний неповернений кредит.
 
 # 24.  Знайти клієнта, сума кредиту якого найменша.
-select min(sum) from application where match(idApplication);
 
 # 25.  Знайти кредити, сума яких більша за середнє значення усіх кредитів.
 
 # 26.  Знайти клієнтів, які є з того самого міста, що і клієнт, який взяв найбільшу кількість кредитів.
 
 # 27.  Max sum.
+select max(Sum) from application;
 
 # 28.  Місто чувака який набрав найбільше кредитів.
