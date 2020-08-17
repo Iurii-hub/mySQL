@@ -15,28 +15,34 @@ select * from client where LastName like '%iv';
 
 # 6. Вивести клієнтів банку, які обслуговуються київськими відділеннями.
 select * from client join department on client.Department_idDepartment = department.idDepartment where department.DepartmentCity = 'Kyiv'; #full info
-select client.idClient, client.LastName, client.Department_idDepartment, client.City, department.DepartmentCity from client join department on client.Department_idDepartment = department.idDepartment where department.DepartmentCity = 'Kyiv';
+select client.idClient, client.LastName, client.Department_idDepartment, client.City, department.DepartmentCity from client 
+join department on client.Department_idDepartment = department.idDepartment where department.DepartmentCity = 'Kyiv';
 
 # 7. Вивести імена клієнтів та їхні номера паспорта, погрупувавши їх за іменами.
 select FirstName, Passport from client order by FirstName;
 
 # 8. Вивести дані про клієнтів, які мають кредит більше ніж на 5000 тисяч гривень.
-select client.FirstName, client.LastName, application.Sum from client join application on client.idClient = application.Client_idClient where Sum > 5000 and Currency like 'gryvnia';
+select client.FirstName, client.LastName, application.Sum from client 
+join application on client.idClient = application.Client_idClient where Sum > 5000 and Currency like 'gryvnia';
 
 # 9. Порахувати кількість клієнтів усіх відділень та лише львівських відділень.
-select count(idClient) from client union select count(idClient) from client where city like 'lviv'; #join
-select count(idClient) from client union select count(idClient) from client join department on client.Department_idDepartment = department.idDepartment where department.DepartmentCity like 'lviv'; #join
+select count(idClient) from client union select count(idClient) from client 
+join department on client.Department_idDepartment = department.idDepartment where department.DepartmentCity like 'lviv';
 
 # 10.  Знайти кредити, які мають найбільшу суму для кожного клієнта окремо.
-select max(sum) from application;
-select Client_idClient from application;
+select idClient, FirstName, LastName, max(sum) from application 
+join client on application.Client_idClient = client.idClient group by idClient;
 
 # 11.  Визначити кількість заявок на кредит для кожного клієнта.
-select count(idApplication) from application(Client_idClient);
+select idClient, FirstName, LastName, count(Client_idClient) from application 
+join client on application.Client_idClient = client.idClient group by idClient;
 
 # 12.  Визначити найбільший та найменший кредити.
+select max(Sum), min(Sum) from application;
 
 # 13.  Порахувати кількість кредитів для клієнтів, які мають вищу освіту.
+select Education, FirstName,LastName, count(Client_idClient) from application 
+join client on application.Client_idClient = client.idClient where Education = 'high' group by Client_idClient;
 
 # 14.  Вивести дані про клієнта, в якого середня сума кредитів найвища.
 
