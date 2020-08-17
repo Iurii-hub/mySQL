@@ -68,20 +68,47 @@ update client join department on client.Department_idDepartment = department.idD
 delete from application where CreditState = 'Returned';
 
 # 20.  Видалити кредити клієнтів, в яких друга літера прізвища є голосною.
+delete application from application
+join client on application.Client_idClient = client.idClient
+where LastName like '_a%' or  LastName like '_e%' or LastName like '_i%' or LastName like '_o%' 
+or LastName like '_u%' or '_y%';
 
 # 21.  Знайти львівські відділення, які видали кредитів на загальну суму більше ніж 5000.
+select idDepartment, DepartmentCity, totalSum from (select idDepartment, DepartmentCity, sum(sum) as totalSum 
+from application
+join client on application.Client_idClient = client.idClient
+join department on client.Department_idDepartment = department.idDepartment 
+group by idDepartment order by idDepartment) as tab where totalSum > 5000 and DepartmentCity = 'lviv';
 
 # 22.  Знайти клієнтів, які повністю погасили кредити на суму більше ніж 5000.
+select idClient, FirstName, LastName from client
+join application on client.idClient = application.Client_idClient where Sum > 5000 and CreditState = 'returned';
 
 # 23.  Знайти максимальний неповернений кредит.
+select idClient, FirstName, LastName, Sum, CreditState from client
+join application on client.idClient = application.Client_idClient where CreditState = 'Not returned' 
+order by Sum desc limit 1;
 
 # 24.  Знайти клієнта, сума кредиту якого найменша.
+select idClient, FirstName, LastName, sum(Sum) from client
+join application on client.idClient = application.Client_idClient group by idClient order by sum(Sum) limit 1;
 
 # 25.  Знайти кредити, сума яких більша за середнє значення усіх кредитів.
+select idApplication, sumId, (select avg(Sum) from application) from (select *, sum(Sum) as sumId from application
+group by Client_idClient) as tab where sumId > (select avg(Sum) from application);
 
 # 26.  Знайти клієнтів, які є з того самого міста, що і клієнт, який взяв найбільшу кількість кредитів.
+ select * from client where City = (select City from (select *, count(Client_idClient), 
+ Client_idClient as clientId from application right join client on application.Client_idClient = client.idClient 
+ group by Client_idClient order by count(Client_idClient) desc limit 1) as tab where clientId=idClient);
 
 # 27.  Max sum.
 select max(Sum) from application;
 
 # 28.  Місто чувака який набрав найбільше кредитів.
+select City from (select *, sum(Sum), Client_idClient as clientId from application
+join client on application.Client_idClient = client.idClient
+group by Client_idClient order by sum(Sum) desc limit 1) as tab where clientId = idClient;
+
+
+#drop database bank;
